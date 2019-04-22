@@ -34,12 +34,11 @@ public class UserControllerTest {
 	@Before
 	public void setup(){
 		mockMvc=MockMvcBuilders.webAppContextSetup(wac).build();
-		
 	}
 	
 	@Test
 	public void whenQuerySuccess() throws Exception{
-		mockMvc.perform(get("/user")
+		String result=mockMvc.perform(get("/user")
 				.param("username", "jojo")
 				.param("age", "18")
 				.param("ageTo", "80")
@@ -48,7 +47,25 @@ public class UserControllerTest {
 				//.param("page", "3")
 				//.param("sort", "age,desc")
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3))
+				.andReturn().getResponse().getContentAsString();
+		System.out.println(result);
+	}
+	@Test
+	public void whenGenInfoSuccess() throws Exception{
+		String result=mockMvc.perform(get("/user/1")
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.username").value("tom"))
+				.andReturn().getResponse().getContentAsString();
+		System.out.println(result);
+	}
+	
+	@Test
+	public void whenGetInfoFail() throws Exception{
+		mockMvc.perform(get("/user/a")
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().is4xxClientError());
 	}
 	
 }
